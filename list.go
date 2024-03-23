@@ -13,6 +13,7 @@ type listItem struct {
 	SecondaryText string // A secondary text to be shown underneath the main text.
 	Shortcut      rune   // The key to select the list item directly, 0 if there is no shortcut.
 	Selected      func() // The optional function which is called when the item is selected.
+	SelectedStyle *tcell.Style
 }
 
 // List displays rows of items, each of which can be selected. List items can be
@@ -536,7 +537,11 @@ func (l *List) Draw(screen tcell.Screen) {
 			for bx := 0; bx < textWidth; bx++ {
 				m, c, style, _ := screen.GetContent(x+bx, y)
 				fg, _, _ := style.Decompose()
-				style = l.selectedStyle
+				if item.SelectedStyle != nil {
+					style = *item.SelectedStyle
+				} else {
+					style = l.selectedStyle
+				}
 				if bx < taggedStringWidth && fg != mainTextColor {
 					style = style.Foreground(fg)
 				}
